@@ -45,6 +45,16 @@ function Weather() {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
 
+  const weatherIcon = {
+    0: "☀️",
+    1: "🌤",
+    2: "⛅",
+    3: "☁️",
+    61: "🌧",
+    71: "🌨",
+    95: "⛈",
+  };
+
   useEffect(() => {
     if (!city) return; // If no city is set, do not fetch weather data
     fetchWeather({ city })
@@ -54,29 +64,42 @@ function Weather() {
   }, [city]); // This effect runs every time the 'city' state changes
 
   return (
-    <>
-      <input
-        type="text"
-        placeholder="Enter city"
-        onChange={(e) => setSearchCity(e.target.value)}
-      />
-      <button onClick={handleSearch}>Search</button>
-      <p>City: {city}</p>
-      {loading && <p>Loading...</p>}
-      {error && <p style={{ color: "red" }}>{error}</p>}
-      {!loading && forecast && (
-        <>
-          <div>7-day Forecast:</div>
-          {forecast.time.map((date, i) => (
+    <div className="weather-app">
+      <h1>🌤 Weather</h1>
+
+      <div className="search-bar">
+        <input
+          placeholder="Enter city"
+          onChange={(e) => setSearchCity(e.target.value)}
+        />
+        <button onClick={handleSearch}>Search</button>
+      </div>
+
+      {loading && <p className="loading">Loading...</p>}
+      {error && <p className="error">{error}</p>}
+      {city && !loading && <p className="city-name">{city}</p>}
+
+      <div className="forecast-grid">
+        {!loading &&
+          forecast &&
+          forecast.time.map((date, i) => (
             <div key={date} className="forecast-card">
-              <p>Date: {date}</p>
-              <p>↑ {forecast.temperature_2m_max[i]}°C</p>
-              <p>↓ {forecast.temperature_2m_min[i]}°C</p>
+              <p className="date">
+                {new Date(date).toLocaleDateString("en-US", {
+                  weekday: "short",
+                  month: "short",
+                  day: "numeric",
+                })}
+              </p>
+              <p className="high">↑ {forecast.temperature_2m_max[i]}°C</p>
+              <p className="low">↓ {forecast.temperature_2m_min[i]}°C</p>
+              <p className="icon">
+                {weatherIcon[forecast.weathercode[i]] || "❓"}
+              </p>
             </div>
           ))}
-        </>
-      )}
-    </>
+      </div>
+    </div>
   );
 }
 
