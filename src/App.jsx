@@ -94,7 +94,9 @@ function Weather() {
               <p className="high">↑ {forecast.temperature_2m_max[i]}°C</p>
               <p className="low">↓ {forecast.temperature_2m_min[i]}°C</p>
               <p className="icon">
-                {weatherIcon[forecast.weathercode[i]] || "❓"}
+                {weatherIcon[forecast.weathercode[i]] || "❓"} //use the weather
+                // code to get the corresponding icon, default to "❓" if code
+                is // unknown
               </p>
             </div>
           ))}
