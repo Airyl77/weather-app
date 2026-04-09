@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Routes, Route } from "react-router-dom";
 import "../App.css";
+import { useFavorites } from "../context/FavoritesContext";
 
 // function ProfileCard({ name, bio, hobby }) {
 //   const [count, setCount] = useState(0);
@@ -16,13 +17,8 @@ import "../App.css";
 //   );
 // }
 
-function Weather() {
-  function handleSearch() {
-    setCity(searchCity);
-    setForecast(null); // clear old forecast
-    setError(null); // clear old error
-    setLoading(true); // start loading
-  }
+function Home() {
+  const { addFavorite } = useFavorites();
 
   //const [temp, setTemp] = useState(null);
   const [city, setCity] = useState("");
@@ -41,6 +37,13 @@ function Weather() {
     95: "⛈",
   };
 
+  function handleSearch() {
+    setCity(searchCity);
+    setForecast(null); // clear old forecast
+    setError(null); // clear old error
+    setLoading(true); // start loading
+  }
+
   useEffect(() => {
     if (!city) return; // If no city is set, do not fetch weather data
     fetchWeather({ city })
@@ -48,6 +51,8 @@ function Weather() {
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false));
   }, [city]); // This effect runs every time the 'city' state changes
+
+  //use the weather code to get the corresponding icon, default to "❓" if code is unknown
 
   return (
     <div className="weather-app">
@@ -59,6 +64,9 @@ function Weather() {
           onChange={(e) => setSearchCity(e.target.value)}
         />
         <button onClick={handleSearch}>Search</button>
+        {city && (
+          <button onClick={() => addFavorite(city)}>★ Add to Favorites</button>
+        )}
       </div>
 
       {loading && <p className="loading">Loading...</p>}
@@ -80,9 +88,7 @@ function Weather() {
               <p className="high">↑ {forecast.temperature_2m_max[i]}°C</p>
               <p className="low">↓ {forecast.temperature_2m_min[i]}°C</p>
               <p className="icon">
-                {weatherIcon[forecast.weathercode[i]] || "❓"} //use the weather
-                // code to get the corresponding icon, default to "❓" if code
-                is // unknown
+                {weatherIcon[forecast.weathercode[i]] || "❓"}
               </p>
             </div>
           ))}
@@ -114,4 +120,4 @@ async function fetchWeather({ city }) {
   return weatherData.daily;
 }
 
-export default Weather;
+export default Home;
